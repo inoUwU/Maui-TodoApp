@@ -6,6 +6,7 @@ namespace Maui_TodoApp
     {
         public static MauiApp CreateMauiApp()
         {
+            // クロスプラットフォームのエントリーポイント
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
@@ -16,7 +17,7 @@ namespace Maui_TodoApp
                 });
 
 #if DEBUG
-    		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif
 
             return builder.Build();
