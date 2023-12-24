@@ -1,7 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Maui_TodoApp.MainPage">
+             x:Class="Maui_TodoApp.MainPage"
+             xmlns:vm="clr-namespace:Maui_TodoApp.ViewModels"
+             >
+
+    <ContentPage.BindingContext>
+        <vm:MainPageViewModel/>
+    </ContentPage.BindingContext>
 
     <ScrollView>
         <VerticalStackLayout
@@ -14,7 +20,7 @@
                 SemanticProperties.Description="dot net bot in a race car number eight" />
 
             <Label
-                Text="Hello, World!"
+                Text="{Binding Text}"
                 Style="{StaticResource Headline}"
                 SemanticProperties.HeadingLevel="Level1" />
 
@@ -26,9 +32,9 @@
 
             <Button
                 x:Name="CounterBtn"
-                Text="Click me" 
+                Text="{Binding model.ClickText}" 
                 SemanticProperties.Hint="Counts the number of times you click"
-                Clicked="OnCounterClicked"
+                Command="{Binding AddCounterCommand}"
                 HorizontalOptions="Fill" />
         </VerticalStackLayout>
     </ScrollView>

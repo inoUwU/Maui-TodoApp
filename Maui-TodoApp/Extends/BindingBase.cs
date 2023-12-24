@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace Maui_TodoApp
+namespace Maui_TodoApp.Extends
 {
     public class BindableBase : INotifyPropertyChanged
     {
