@@ -9,12 +9,9 @@
             get => _count;
             set
             {
-                if (_count == value)
-                {
-                    if (value == 1)
-                        _ClickText = $"Click {value} time";
-                    else _ClickText = $"Click {value} times";
-                }
+                if (value == 1)
+                    ClickText = $"Click {value} time";
+                else ClickText = $"Click {value} times";
 
                 _count = value;
             }
@@ -24,7 +21,7 @@
         public string ClickText
         {
             get => _ClickText;
-            set => SetProperty(ref _ClickText, value);
+            set => _ = SetProperty(ref _ClickText, value);
         }
     }
 }

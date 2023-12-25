@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace Maui_TodoApp.ViewModels
 {
@@ -14,15 +15,17 @@ namespace Maui_TodoApp.ViewModels
 
         public MainPageModel model { get; set; } = new();
 
-        public DelegateCommand<int> AddCounterCommand { get; set; }
+        public ICommand AddCounterCommand { get; set; }
 
         public MainPageViewModel()
         {
-            AddCounterCommand = new DelegateCommand<int>((vlaue) =>
-            {
-                model.Count++;
-            });
+            AddCounterCommand = new DelegateCommand(Add);
+
+        }
+
+        private void Add(object obj)
+        {
+            model.Count++;
         }
     }
-
 }
