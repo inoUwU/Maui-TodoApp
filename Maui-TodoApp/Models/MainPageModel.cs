@@ -23,5 +23,20 @@
             get => _ClickText;
             set => _ = SetProperty(ref _ClickText, value);
         }
+
+        private int _PortNumber;
+
+        public int PortNumber
+        {
+            get { return _PortNumber; }
+            set
+            {
+                if (_PortNumber != value)
+                {
+                    _PortNumber = value;
+                    SetProperty(ref _PortNumber,value);
+                }
+            }
+        }
     }
 }

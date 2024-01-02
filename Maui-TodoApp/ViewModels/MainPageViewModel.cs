@@ -11,9 +11,7 @@ namespace Maui_TodoApp.ViewModels
 {
     internal class MainPageViewModel
     {
-        public string Text { get; set; } = "Initial Text";
-
-        public MainPageModel model { get; set; } = new();
+        public MainPageModel Model { get; set; } = new();
 
         public ICommand AddCounterCommand { get; set; }
 
@@ -21,11 +19,17 @@ namespace Maui_TodoApp.ViewModels
         {
             AddCounterCommand = new DelegateCommand(Add);
 
+            var server = WsServer.WsServer.GetInstance();
+            server.OnPortAssigned += (port) =>
+            {
+                Model.PortNumber = port;
+            };
+            server.Start();
         }
 
         private void Add(object obj)
         {
-            model.Count++;
+            Model.Count++;
         }
     }
 }

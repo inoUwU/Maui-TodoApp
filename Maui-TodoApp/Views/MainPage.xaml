@@ -20,7 +20,7 @@
                 SemanticProperties.Description="dot net bot in a race car number eight" />
 
             <Label
-                Text="{Binding Text}"
+                Text="{Binding Model.PortNumber}"
                 Style="{StaticResource Headline}"
                 SemanticProperties.HeadingLevel="Level1" />
 
@@ -32,7 +32,7 @@
 
             <Button
                 x:Name="CounterBtn"
-                Text="{Binding model.ClickText}" 
+                Text="{Binding Model.ClickText}" 
                 SemanticProperties.Hint="Counts the number of times you click"
                 Command="{Binding AddCounterCommand}"
                 HorizontalOptions="Fill" />
