@@ -1,0 +1,114 @@
+﻿using System.Net;
+using System.Net.Sockets;
+using System.Net.WebSockets;
+using System.Runtime.CompilerServices;
+using System.Text;
+
+namespace Maui_TodoApp.WsServer
+{
+    internal class WsServer
+    {
+        private Thread serverThread; // サーバースレッド
+        private HttpListener httpListener; // httpリスナー
+        private readonly CancellationTokenSource _cancellationTokenSource = new();
+        private static WsServer? _Instance;
+
+        private static int GetRandomUnusedPort()
+        {
+            var listener = new TcpListener(IPAddress.Any, 0);
+            listener.Start();
+            var port = ((IPEndPoint)listener.LocalEndpoint).Port;
+            listener.Stop();
+            return port;
+        }
+
+        public static WsServer GetInstance()
+        {
+            if (WsServer._Instance == null)
+            {
+                _Instance = new WsServer();
+            }
+            return _Instance;
+        }
+
+        public void Start()
+        {
+            serverThread = new Thread(new ThreadStart(StartServer))
+            {
+                // バックグランウドスレッドに設定
+                IsBackground = true
+            };
+            serverThread.Start();
+        }
+
+        public void Stop()
+        {
+            _cancellationTokenSource.Cancel();
+        }
+
+        private async void StartServer()
+        {
+            httpListener = new HttpListener();
+            var port = GetRandomUnusedPort();
+            httpListener.Prefixes.Add("http://localhost:" + port + "/");
+            httpListener.Start();
+            Console.WriteLine("Listening on" + port);
+
+            while (!_cancellationTokenSource.IsCancellationRequested)
+            {
+                try
+                {
+                    var context = await httpListener.GetContextAsync();
+
+                    if (context.Request.IsWebSocketRequest)
+                    {
+                        await ProcessWebSocketRequestAsync(context);
+                    }
+                    else
+                    {
+                        context.Response.StatusCode = 400;
+                        context.Response.Close();
+                    }
+                }
+                catch (HttpListenerException)
+                {
+                    // HttpListener stopped
+                }
+            }
+
+            httpListener.Stop();
+            Console.WriteLine("WebSocket server stopped.");
+        }
+
+        private async Task ProcessWebSocketRequestAsync(HttpListenerContext context)
+        {
+            var webSocketContext = await context.AcceptWebSocketAsync(subProtocol: null);
+
+            Console.WriteLine("WebSocket connection established.");
+
+            var webSocket = webSocketContext.WebSocket;
+
+            ThreadPool.QueueUserWorkItem(async state =>
+            {
+                var buffer = new byte[1024];
+                while (webSocket.State == WebSocketState.Open)
+                {
+                    var result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), _cancellationTokenSource.Token);
+                    if (result.MessageType == WebSocketMessageType.Text)
+                    {
+                        var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                        Console.WriteLine($"Received message: {message}");
+                        var responseMessage = $"You sent '{message}' at {DateTime.Now.ToLongTimeString()}";
+                        var responseBytes = Encoding.UTF8.GetBytes(responseMessage);
+                        await webSocket.SendAsync(new ArraySegment<byte>(responseBytes), WebSocketMessageType.Text, true, CancellationToken.None);
+                    }
+                    else if (result.MessageType == WebSocketMessageType.Close)
+                    {
+                        await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+                    }
+                }
+                Console.WriteLine("WebSocket connection closed.");
+            });
+        }
+    }
+}
