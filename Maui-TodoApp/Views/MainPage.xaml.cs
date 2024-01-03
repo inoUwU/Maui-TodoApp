@@ -7,6 +7,7 @@
         public MainPage()
         {
             InitializeComponent();
+            WsServer.WsServer.GetInstance().Start();
         }
     }
 }

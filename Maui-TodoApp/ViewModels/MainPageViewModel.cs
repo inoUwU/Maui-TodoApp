@@ -24,7 +24,7 @@ namespace Maui_TodoApp.ViewModels
             {
                 Model.PortNumber = port;
             };
-            server.Start();
+
         }
 
         private void Add(object obj)

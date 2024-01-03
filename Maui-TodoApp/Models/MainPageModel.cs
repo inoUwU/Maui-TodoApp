@@ -31,10 +31,9 @@
             get { return _PortNumber; }
             set
             {
-                if (_PortNumber != value)
+                if (value != 0)
                 {
-                    _PortNumber = value;
-                    SetProperty(ref _PortNumber,value);
+                    SetProperty(ref _PortNumber, value);
                 }
             }
         }

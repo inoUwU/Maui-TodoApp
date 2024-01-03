@@ -48,26 +48,19 @@ namespace Maui_TodoApp.WsServer
             serverThread.Start();
         }
 
-        public void Restart()
-        {
-            _cancellationTokenSource.Cancel();
-            serverThread = new Thread(new ThreadStart(StartServer))
-            {
-                // バックグランウドスレッドに設定
-                IsBackground = true
-            };
-            serverThread.Start();
-        }
-
         public void Stop()
         {
             if (httpListener is not null) httpListener?.Stop();
         }
 
-        public void Dispose()
+        public async void Dispose()
         {
             _cancellationTokenSource.Cancel();
-            httpListener?.Close();
+            await Task.Delay(3000);
+            if (httpListener is not null && !httpListener.IsListening)
+            {
+                httpListener?.Close();
+            }
         }
 
         private async void StartServer()
